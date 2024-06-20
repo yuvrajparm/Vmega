@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMega</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0d0d0d;
+            color: #00ffcc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+            background-color: #1a1a1a;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: #00ffcc;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        section {
+            margin: 20px 0;
+            width: 80%;
+        }
+
+        /* Profile Section */
+        #profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+        #profile-pic {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+
+        #username {
+            margin-bottom: 10px;
+        }
+
+        /* Feed Section */
+        #posts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .post {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            width: 200px;
+            text-align: center;
+        }
+
+        /* Upload Section */
+        #upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Buttons */
+        button {
+            background-color: #00ffcc;
+            color: #0d0d0d;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #00cca3;
+        }
+
+        /* Color Theme Picker */
+        #color-theme {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .color-option:hover {
+            border-color: #00ffcc;
+        }
+
+        .red { background-color: #ff6347; }
+        .green { background-color: #32cd32; }
+        .yellow { background-color: #ffd700; }
+        .aqua { background-color: #00ffff; }
+        .orange { background-color: #ffa500; }
+        .white { background-color: #ffffff; color: #333; }
+
+        /* Hidden Elements */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VMega</h1>
+        <nav>
+            <a onclick="showSection('profile')">Profile</a>
+            <a onclick="showSection('feed')">Feed</a>
+            <a onclick="showSection('upload')">Upload</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="profile" class="hidden">
+            <h2>Your Profile</h2>
+            <div id="profile-info">
+                <img src="images/default-profile.png" alt="Profile Picture" id="profile-pic">
+                <div>
+                    <p id="username">Username</p>
+                    <input type="text" id="edit-username" placeholder="Edit Username" class="hidden">
+                    <button id="edit-btn" onclick="editUsername()">Edit Username</button>
+                    <button id="save-btn" class="hidden" onclick="saveUsername()">Save</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="feed" class="hidden">
+            <h2>Feed</h2>
+            <div id="posts"></div>
+        </section>
+
+        <section id="upload" class="hidden">
+            <h2>Upload a Post</h2>
+            <form id="upload-form">
+                <input type="file" id="upload-input">
+                <textarea id="description" placeholder="Description"></textarea>
+                <button type="submit">Upload</button>
+            </form>
+            <div id="color-theme" class="hidden">
+                <h3>Select Color Theme:</h3>
+                <div class="color-option red" onclick="applyColor('#ff6347')"></div>
+                <div class="color-option green" onclick="applyColor('#32cd32')"></div>
+                <div class="color-option yellow" onclick="applyColor('#ffd700')"></div>
+                <div class="color-option aqua" onclick="applyColor('#00ffff')"></div>
+                <div class="color-option orange" onclick="applyColor('#ffa500')"></div>
+                <div class="color-option white" onclick="applyColor('#ffffff')">W</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const posts = [
+                { id: 1, image: 'images/sample1.jpg', description: 'Post 1' },
+                { id: 2, image: 'images/sample2.jpg', description: 'Post 2' },
+                // More sample posts
+            ];
+
+            const postsContainer = document.getElementById('posts');
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                    <img src="${post.image}" alt="${post.description}">
+                    <p>${post.description}</p>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+
+            const uploadForm = document.getElementById('upload-form');
+            uploadForm.addEventListener('submit', event => {
+                event.preventDefault();
+                const uploadInput = document.getElementById('upload-input');
+                const description = document.getElementById('description').value;
+                const file = uploadInput.files[0];
+                if (file) {
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                        <img src="${URL.createObjectURL(file)}" alt="${description}">
+                        <p>${description}</p>
+                    `;
+                    postsContainer.appendChild(postElement);
+                    uploadInput.value = '';
+                    document.getElementById('description').value = '';
+                    document.getElementById('color-theme').classList.remove('hidden');
+                }
+            });
+        });
+
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function editUsername() {
+            const usernameElement = document.getElementById('username');
+            const editUsernameElement = document.getElementById('edit-username');
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+
+            usernameElement.classList.add('hidden');
+            editUsernameElement.classList.remove('hidden');
+            editUsernameElement.value = usernameElement.innerText.trim();
+            editBtn.classList.add('hidden');
+            saveBtn.classList.remove('hidden');
+        }
+
+        function saveUsername() {
+            const newUsername = document.getElementById('edit-username').value;
+            if (newUsername) {
+                document.getElementById('username').innerText = newUsername;
+            }
+
+            const usernameElement = document.getElementById('username');
+            const editUsernameElement = document.getElementById('edit-username');
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+
+            usernameElement.classList.remove('hidden');
+            editUsernameElement.classList.add('hidden');
+            editBtn.classList.remove('hidden');
+            saveBtn.classList.add('hidden');
+        }
+
+        function applyColor(color) {
+            document.body.style.backgroundColor = color;
+            if (color === '#ffffff') {
+                document.body.style.color = '#333';
+            } else {
+                document.body.style.color = '#00ffcc';
+            }
+        }
+    </script>
+</body>
+</html>
